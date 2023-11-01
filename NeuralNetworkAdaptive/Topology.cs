@@ -10,7 +10,16 @@ namespace NeuralNetworkAdaptive
     {
         public int InputCount { get; }
         public int OutputCount { get; }
+        /// <summary>
+        /// Список скрытых слоёв
+        /// </summary>
         public List<int> HiddenLayers { get; }
+        /// <summary>
+        /// Конструктор создания описания нейронной сети
+        /// </summary>
+        /// <param name="inputCount"> количество входных сигналов/параметров(входные нейроны)</param>
+        /// <param name="outputCount"> количество выходных сигналов(результирующих)</param>
+        /// <param name="layers">массив, который характеризует количество скрытых слоёв и количество нейронов в них</param>
         public Topology(int inputCount, int outputCount, params int[] layers)
         {
             InputCount = inputCount;

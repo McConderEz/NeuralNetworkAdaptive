@@ -8,7 +8,13 @@ namespace NeuralNetworkAdaptive
 {
     public class NeuralNetwork
     {
+        /// <summary>
+        /// Описание нейронной сети
+        /// </summary>
         public Topology Topology { get; }
+        /// <summary>
+        /// Список слоёв, которые характеризуют нейронную сеть
+        /// </summary>
         public List<Layer> Layers { get; }
 
         public NeuralNetwork(Topology topology)
@@ -19,7 +25,66 @@ namespace NeuralNetworkAdaptive
             CreateHiddenLayers();
             CreateOutputLayer();
         }
+        
+        /// <summary>
+        /// Прогон сигналов по нейронной сети 
+        /// </summary>
+        /// <param name="inputSignals"></param>
+        /// <returns></returns>
+        public Neuron FeedForward(List<double> inputSignals)
+        {
+            //TODO:Проверки соответствия входных сигналов количеству входных нейронов в топологии
+            SendSignalsToInputNeurons(inputSignals);
+            FeedForwardAllLayersAfterInput();
 
+            if(Topology.OutputCount == 1)
+            {
+                return Layers.Last().Neurons[0];
+            }
+            else
+            {
+                return Layers.Last().Neurons.OrderByDescending(n=>n.Output).First();
+            }
+
+        }
+
+        /// <summary>
+        /// Прогон сигналов по всем слоям после входного
+        /// </summary>
+        private void FeedForwardAllLayersAfterInput()
+        {
+            for (int i = 1; i < Layers.Count; i++)
+            {
+                var layer = Layers[i];
+                var previousLayersSignals = Layers[i - 1].GetSignals();
+
+                foreach (var neuron in layer.Neurons)
+                {
+                    neuron.FeedForward(previousLayersSignals);
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Инициализация входных нейронов и прогон к последующим слоям
+        /// </summary>
+        /// <param name="inputSignals"></param>
+        private void SendSignalsToInputNeurons(List<double> inputSignals)
+        {
+            for (var i = 0; i < inputSignals.Count; i++)
+            {
+                var signal = new List<double>() { inputSignals[i] };
+                var neuron = Layers[0].Neurons[i];
+
+                neuron.FeedForward(signal);
+            }
+        }
+
+
+        /// <summary>
+        /// Создание входного слоя
+        /// </summary>
         private void CreateInputLayer()
         {
             var inputNeurons = new List<Neuron>();
@@ -32,13 +97,16 @@ namespace NeuralNetworkAdaptive
             Layers.Add(inputLayer);
         }
 
+        /// <summary>
+        /// Создание скрытых слоёв
+        /// </summary>
         private void CreateHiddenLayers()
         {
-            for(int i = 0;i < Topology.HiddenLayers.Count; i++)
+            for(int i = 0;i < Topology.HiddenLayers.Count; i++)//Слои
             {
                 var hiddenNeurons = new List<Neuron>();
                 var lastLayer = Layers.Last();
-                for(int j = 0;j < Topology.HiddenLayers[i]; j++)
+                for(int j = 0;j < Topology.HiddenLayers[i]; j++)//Нейроны в слоях
                 {
                     var neuron = new Neuron(lastLayer.NeuronCount);
                     hiddenNeurons.Add(neuron);
@@ -49,6 +117,9 @@ namespace NeuralNetworkAdaptive
             }
         }
 
+        /// <summary>
+        /// Создание выходного слоя
+        /// </summary>
         private void CreateOutputLayer()
         {
             var outputNeurons = new List<Neuron>();

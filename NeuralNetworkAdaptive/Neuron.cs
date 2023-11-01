@@ -8,21 +8,44 @@ namespace NeuralNetworkAdaptive
 {
     public class Neuron
     {
+        /// <summary>
+        /// Веса для перемножения на входящие сигналы
+        /// </summary>
         public List<double> Weights { get; }
+        /// <summary>
+        /// Входящие сигналы
+        /// </summary>
         public List<double> Inputs { get; }
+        /// <summary>
+        /// Тип нейрона(Входной, скрытый, выходной)
+        /// </summary>
         public NeuronType NeuronType { get; }
+        /// <summary>
+        /// Выходное значение после функции активации 
+        /// </summary>
         public double Output { get; private set; }
 
 
         public Neuron(int inputCount, NeuronType type = NeuronType.Normal)
         {
+            //TODO: Проверки
             NeuronType = type;
             Inputs = new List<double>();
             Weights = new List<double>();
-
         }
 
+        public void SetWeights(params double[] weights)
+        {
+            for(int i = 0;i < weights.Length; i++)
+            {
+                Weights[i] = weights[i];
+            }
+        }
 
+        /// <summary>
+        /// Инициализация весов
+        /// </summary>
+        /// <param name="inputCount"></param>
         private void InitWeightsRandomValue(int inputCount)
         {
             var rnd = new Random();
@@ -41,6 +64,11 @@ namespace NeuralNetworkAdaptive
             }
         }
 
+        /// <summary>
+        /// Перемножение весов на сигналы
+        /// </summary>
+        /// <param name="inputs"></param>
+        /// <returns></returns>
         public double FeedForward(List<double> inputs)
         {
             for(int i = 0;i < inputs.Count;i++)
@@ -65,6 +93,11 @@ namespace NeuralNetworkAdaptive
             return Output;
         }
 
+        /// <summary>
+        /// Функция активации Сигмоида
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         private double Sigmoid(double x) => 1.0 / (1.0 + Math.Pow(Math.E, -x));
         
     }
