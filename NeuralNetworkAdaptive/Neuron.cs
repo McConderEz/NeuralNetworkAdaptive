@@ -28,10 +28,19 @@ namespace NeuralNetworkAdaptive
 
         public Neuron(int inputCount, NeuronType type = NeuronType.Normal)
         {
-            //TODO: Проверки
+            if(inputCount <= 0)
+            {
+                throw new ArgumentException("Количество входных сигналов не можеть быть меньше или равно 0!",nameof(inputCount));
+            }
+
             NeuronType = type;
             Inputs = new List<double>();
             Weights = new List<double>();
+
+            for(var i = 0;i < inputCount;i++)
+            {
+                Weights.Add(i);
+            }
         }
 
         public void SetWeights(params double[] weights)
@@ -71,10 +80,10 @@ namespace NeuralNetworkAdaptive
         /// <returns></returns>
         public double FeedForward(List<double> inputs)
         {
-            for(int i = 0;i < inputs.Count;i++)
-            {
-                Inputs[i] = inputs[i];
-            }
+            //for(int i = 0;i < inputs.Count;i++)
+            //{
+            //    Inputs[i] = inputs[i];
+            //}
 
             var sum = 0.0;
             for(int i = 0;i < inputs.Count; i++)

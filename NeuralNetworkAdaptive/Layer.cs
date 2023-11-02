@@ -20,7 +20,13 @@ namespace NeuralNetworkAdaptive
 
         public Layer(List<Neuron> neurons, NeuronType type = NeuronType.Normal)
         {
-            //TODO: Проверить входные нейроны на соответствие типу
+            
+            foreach(Neuron neuron in neurons)
+            {
+                if(neuron.NeuronType != type)
+                    throw new ArgumentException("Не соответствие типа нейрона с типом слоя!",nameof(neuron));
+            }
+
             Neurons = neurons;
             Type = type;
         }

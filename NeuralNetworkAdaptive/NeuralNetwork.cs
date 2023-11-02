@@ -33,7 +33,11 @@ namespace NeuralNetworkAdaptive
         /// <returns></returns>
         public Neuron FeedForward(List<double> inputSignals)
         {
-            //TODO:Проверки соответствия входных сигналов количеству входных нейронов в топологии
+            if(Topology.InputCount != inputSignals.Count)
+            {
+                throw new ArgumentException("Количество входны нейронов не соответствует количеству описанному в топологии!",nameof(inputSignals.Count));
+            }
+
             SendSignalsToInputNeurons(inputSignals);
             FeedForwardAllLayersAfterInput();
 
@@ -124,7 +128,7 @@ namespace NeuralNetworkAdaptive
         {
             var outputNeurons = new List<Neuron>();
             var lastLayer = Layers.Last();
-            for (int i = 0; i < Topology.InputCount; i++)
+            for (int i = 0; i < Topology.OutputCount; i++)
             {
                 var neuron = new Neuron(lastLayer.NeuronCount, NeuronType.Output);
                 outputNeurons.Add(neuron);
