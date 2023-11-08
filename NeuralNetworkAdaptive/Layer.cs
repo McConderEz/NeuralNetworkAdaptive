@@ -45,5 +45,10 @@ namespace NeuralNetworkAdaptive
 
             return result;
         }
+
+        public override string ToString()
+        {
+            return Type.ToString();
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace NeuralNetworkAdaptive
         /// <summary>
         /// Веса для перемножения на входящие сигналы
         /// </summary>
-        public List<double> Weights { get; }
+        public List<double> Weights { get; }       
         /// <summary>
         /// Входящие сигналы
         /// </summary>
@@ -24,6 +24,10 @@ namespace NeuralNetworkAdaptive
         /// Выходное значение после функции активации 
         /// </summary>
         public double Output { get; private set; }
+        /// <summary>
+        /// Параметр корректировки весов
+        /// </summary>
+        public double Delta { get; private set; }
 
 
         public Neuron(int inputCount, NeuronType type = NeuronType.Normal)
@@ -37,17 +41,27 @@ namespace NeuralNetworkAdaptive
             Inputs = new List<double>();
             Weights = new List<double>();
 
-            for(var i = 0;i < inputCount;i++)
-            {
-                Weights.Add(i);
-            }
+            InitWeightsRandomValue(inputCount);
         }
 
-        public void SetWeights(params double[] weights)
+        /// <summary>
+        /// Метод вычисления новых весов нейрона(Обучение)
+        /// </summary>
+        public void Learn(double error, double learningRate)
         {
-            for(int i = 0;i < weights.Length; i++)
+            if(NeuronType == NeuronType.Input)
             {
-                Weights[i] = weights[i];
+                return;
+            }
+
+            Delta = error * SigmoidDx(Output);
+
+            for(var i = 0; i < Weights.Count; i++)
+            {
+                var weight = Weights[i];
+                var input = Inputs[i];
+                var newWeight = weight - input * Delta * learningRate;
+                Weights[i] = newWeight; 
             }
         }
 
@@ -61,7 +75,7 @@ namespace NeuralNetworkAdaptive
 
             for(int i = 0;i < inputCount; i++)
             {
-                if(NeuronType == NeuronType.Input)
+                if (NeuronType == NeuronType.Input)
                 {
                     Weights.Add(1);
                 }
@@ -80,10 +94,11 @@ namespace NeuralNetworkAdaptive
         /// <returns></returns>
         public double FeedForward(List<double> inputs)
         {
-            //for(int i = 0;i < inputs.Count;i++)
-            //{
-            //    Inputs[i] = inputs[i];
-            //}
+            //Сохранение входных сигналов
+            for (int i = 0; i < inputs.Count; i++)
+            {
+                Inputs[i] = inputs[i];
+            }
 
             var sum = 0.0;
             for(int i = 0;i < inputs.Count; i++)
@@ -108,6 +123,12 @@ namespace NeuralNetworkAdaptive
         /// <param name="x"></param>
         /// <returns></returns>
         private double Sigmoid(double x) => 1.0 / (1.0 + Math.Pow(Math.E, -x));
-        
+
+        /// <summary>
+        /// Производная от сигмоиды
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private double SigmoidDx(double x) => Sigmoid(x) / (1 - Sigmoid(x));
     }
 }
